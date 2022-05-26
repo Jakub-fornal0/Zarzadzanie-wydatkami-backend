@@ -17,22 +17,11 @@ router.post("/", async (req, res) => {
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
     const hashPassword = await bcrypt.hash(req.body.password, salt);
 
-    await new User({ ...req.body, password: hashPassword }).save();
+    await new User({ ...req.body, password: hashPassword, money: 0.0 }).save();
     res.status(201).send({ message: "Utworzono użytkownika" });
   } catch (error) {
     res.status(500).send({ message: "Wewnętrzny błąd serwera" });
   }
 });
 
-router.get("/name", async (req, res) => {
-  User.findById(req.user._id)
-    .exec()
-    .then(async () => {
-      const user = await User.findById(req.user._id);
-      res.status(200).send({ data: user, message: "Nazwa użytkownika" });
-    })
-    .catch((error) => {
-      res.status(500).send({ message: error.message });
-    });
-});
 module.exports = router;
