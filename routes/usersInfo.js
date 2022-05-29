@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const { User } = require("../models/user");
+const { Expense } = require("../models/expense");
 
 router.get("/name", async (req, res) => {
   User.findById(req.user._id)
@@ -14,7 +15,6 @@ router.get("/name", async (req, res) => {
 });
 
 router.post("/updateMoney", async (req, res) => {
-  console.log("Jestem tu");
   User.findOneAndUpdate(
     { _id: req.user._id },
     { money: req.body.money },
@@ -27,6 +27,15 @@ router.post("/updateMoney", async (req, res) => {
       }
     }
   );
+});
+
+router.post("/addExpense", async (req, res) => {
+  try {
+    await new Expense({ ...req.body, userId: req.user._id }).save();
+    res.status(201).send({ message: "Dodano wydatek" });
+  } catch (error) {
+    res.status(500).send({ message: "Wewnętrzny błąd serwera" });
+  }
 });
 
 module.exports = router;
