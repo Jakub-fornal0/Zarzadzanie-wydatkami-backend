@@ -38,4 +38,28 @@ router.post("/addExpense", async (req, res) => {
   }
 });
 
+router.get("/expenses", async (req, res) => {
+  Expense.find()
+    .exec()
+    .then(async () => {
+      const expenses = await Expense.find({ userId: req.user._id });
+      //konfiguracja odpowiedzi res z przekazaniem listy użytkowników:
+      res.status(200).send({ data: expenses, message: "Wydatki" });
+    })
+    .catch((error) => {
+      res.status(500).send({ message: error.message });
+    });
+});
+
+router.post("/deleteexpense", async (req, res) => {
+  Expense.findByIdAndRemove(req.body.id)
+    .exec()
+    .then(async () => {
+      res.status(200).send({ message: "Usunięto wydatek." });
+    })
+    .catch((error) => {
+      res.status(500).send({ message: error.message });
+    });
+});
+
 module.exports = router;
