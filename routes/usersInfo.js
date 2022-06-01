@@ -32,6 +32,20 @@ router.post("/updateMoney", async (req, res) => {
 router.post("/addExpense", async (req, res) => {
   try {
     await new Expense({ ...req.body, userId: req.user._id }).save();
+
+    User.findOneAndUpdate(
+      { _id: req.user._id },
+      { money: req.body.updateMoney },
+      { new: true },
+      (err, doc) => {
+        if (!err) {
+          console.log("Edytowano");
+        } else {
+          res.status(500).send({ message: error.message });
+        }
+      }
+    );
+
     res.status(201).send({ message: "Dodano wydatek" });
   } catch (error) {
     res.status(500).send({ message: "Wewnętrzny błąd serwera" });
