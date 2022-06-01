@@ -69,6 +69,18 @@ router.post("/deleteexpense", async (req, res) => {
   Expense.findByIdAndRemove(req.body.id)
     .exec()
     .then(async () => {
+      User.findOneAndUpdate(
+        { _id: req.user._id },
+        { money: req.body.money },
+        { new: true },
+        (err, doc) => {
+          if (!err) {
+            console.log("Edytowano");
+          } else {
+            res.status(500).send({ message: error.message });
+          }
+        }
+      );
       res.status(200).send({ message: "Usunięto wydatek." });
     })
     .catch((error) => {
